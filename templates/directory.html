@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+
+<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" media="all" href="/static/styles.css" />
+</head>
+<body>
+
+<div id="header" class="pure-g" style="background-color: #000000; color: #ffffff; padding: 15px">
+  <div class="pure-u-3-4">Greg's Cloud</div>
+  {{if .IsPublic}}
+  <div class="pure-u-1-4">Public link</div>
+  {{else}}
+  <div class="pure-u-1-4">User: {{.User}}</div>
+  {{end}}
+</div>
+
+<div id="navigation" class="pure-g" style="margin-top: 1em;">
+  <div class="pure-u-3-5">
+  <a href="/files/">{{.User}}</a>
+  {{range .Path}}
+  > <a href="{{.Url}}">{{.Name}}</a>
+  {{end}}
+  </div>
+  <div class="pure-u-1-5">
+    <a href="?o=zip">Zipped Folder</a>
+  </div>
+  <div class="pure-u-1-5">
+  {{if .IsPublic}} {{else}}
+    <form id="upload" action="" method="POST" enctype="multipart/form-data">
+    <div>
+      <label for="fileselect">Files to upload:</label>
+      <input type="file" id="fileselect" name="fileselect" multiple="multiple" />
+    </div>
+    <div id="submitbutton">
+      <button type="submit">Upload Files</button>
+    </div>
+    </form>
+  <div id="progress"></div>
+{{end}}
+</div>
+</div>
+
+<div id="content" class="pure-g" style="margin-top: 1em;">
+  <div class="pure-u-1-12"></div>
+  <div class="pure-u-11-12">
+    <table class="pure-table pure-table-striped" style="width: 90%">
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th>Size</th>
+          {{if .IsPublic}}{{else}}
+          <th>Share</th>
+          {{end}}
+          <th>Last Modified</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{range .Files}}
+        <tr>
+          {{if .IsDir}}
+          <td><a href="{{.Name}}/">> {{.Name}}</a></td>
+          {{else}}
+          <td><a href="{{.Name}}">{{.Name}}</a></td>
+          {{end}}
+          <td>{{humanSize .Size}}</td>
+          {{if $.IsPublic}}{{else}}
+          <td>
+            <form action="{{.Name}}" class="publicLinkForm" method="POST">
+              <input type="hidden" name="actionType" value="link">
+              <button type="submit">Get public link</button>
+            </form>
+          </td>
+          {{end}}
+          <td>{{humanDate .ModTime}}</td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{{if .IsPublic}}{{else}}
+<script src="/static/filedrag.js"></script>
+<script src="/static/publiclink.js"></script>
+{{end}}
+</body>
+</html>
