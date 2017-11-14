@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+
+<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" media="all" href="/static/styles.css" />
+<style type="text/css">
+  body, html, .bg, .largeLink {
+    height: 100%;
+  }
+
+  .bg {
+      background-image: url({{.CurrentImagePath}});
+
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-color: black; 
+  }
+
+  .largeLink {
+    display: inline-block;     
+    position: relative;    
+    width: 49%;
+  }
+</style>
+</head>
+<body>
+  <div class="bg">
+    <a id="prevLink" href="{{.PreviousImagePath}}?o=image" class="largeLink"></a>
+    <a id="nextLink" href="{{.NextImagePath}}?o=image" class="largeLink"></a>
+  </div>
+</body>
+<script type="text/javascript">
+  document.addEventListener("keydown", function(event) {
+    console.log(event);
+
+    switch(event.keyCode){
+      case 37: // Key left
+      case 38: // Key up
+        document.getElementById('prevLink').click();
+        break;
+      case 39: // Key right  
+      case 40: // Key down  
+        document.getElementById('nextLink').click();
+        break;
+      default:
+    }
+  });
+</script>
+</html>
