@@ -28,6 +28,7 @@ type DirTemplateContent struct {
   Path []Link
   Files []os.FileInfo
   IsPublic bool
+  FirstImage string
 }
 
 func splitPath(path string, isPublic bool)(links []Link){
@@ -55,7 +56,10 @@ func buildTemplateObject(internalPath string, userPath string, user string)(DirT
     if(user == ""){
       isPublic = true
     }
-    return DirTemplateContent{Path: splitPath(userPath, isPublic), User: user, Files: files, IsPublic: isPublic}, nil
+
+    firstImage, _ := firstImage(files)
+
+    return DirTemplateContent{Path: splitPath(userPath, isPublic), User: user, Files: files, IsPublic: isPublic, FirstImage: firstImage}, nil
   }
 }
 

@@ -17,17 +17,25 @@
   {{end}}
 </div>
 
-<div id="navigation" class="pure-g" style="margin-top: 1em;">
-  <div class="pure-u-3-5">
-  <a href="/files/">{{.User}}</a>
-  {{range .Path}}
-  > <a href="{{.Url}}">{{.Name}}</a>
-  {{end}}
+<div id="navigation" style="margin-top: 1em;">
+  <div class="pure-u-4-5">
+    <a href="/files/">{{.User}}</a>
+    {{range .Path}}
+    > <a href="{{.Url}}">{{.Name}}</a>
+    {{end}}
   </div>
-  <div class="pure-u-1-5">
+</div>
+
+<div id="actions" class="pure-g" style="margin-top: 1em;">
+  <div class="pure-u-1-4">
     <a href="?o=zip">Zipped Folder</a>
   </div>
-  <div class="pure-u-1-5">
+  <div class="pure-u-1-4">
+    {{if ne .FirstImage ""}}
+      <a href="{{.FirstImage}}?o=image">Gallery</a>
+    {{end}}
+  </div>
+  <div class="pure-u-1-2">
   {{if .IsPublic}} {{else}}
     <form id="upload" action="" method="POST" enctype="multipart/form-data">
     <div>
@@ -38,9 +46,9 @@
       <button type="submit">Upload Files</button>
     </div>
     </form>
-  <div id="progress"></div>
-{{end}}
-</div>
+    <div id="progress"></div>
+  {{end}}
+  </div>
 </div>
 
 <div id="content" class="pure-g" style="margin-top: 1em;">

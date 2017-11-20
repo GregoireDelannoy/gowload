@@ -22,12 +22,20 @@
   .largeLink {
     display: inline-block;     
     position: relative;    
-    width: 49%;
+    width: 48%;
+  }
+
+  .escape {
+    width: 1%;
+    padding-top: 1em;
   }
 </style>
 </head>
 <body>
   <div class="bg">
+    <div class="escape">
+      <a id="escapeLink" href="./">ESC</a>
+    </div>
     <a id="prevLink" href="{{.PreviousImagePath}}?o=image" class="largeLink"></a>
     <a id="nextLink" href="{{.NextImagePath}}?o=image" class="largeLink"></a>
   </div>
@@ -44,6 +52,9 @@
       case 39: // Key right  
       case 40: // Key down  
         document.getElementById('nextLink').click();
+        break;
+      case 27: // Escape
+        document.getElementById('escapeLink').click();
         break;
       default:
     }

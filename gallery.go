@@ -36,12 +36,24 @@ func toFileName(info os.FileInfo)(string){
   return file
 }
 
+func firstImage(files []os.FileInfo)(string, error){
+  res := pickImages(files)
+
+  if len(res) > 0 {
+    return toFileName(res[0]), nil
+  } else {
+    msg := "No images in given list of files"
+    log.Print(msg)
+    return "", fmt.Errorf(msg)
+  }
+}
+
 func findPreviousNext(images []os.FileInfo, currentImage string)(string, string, error){
   for k, v := range images {
       if toFileName(v) == currentImage {
         prev := images[(k+len(images)-1) % len(images)]
         next := images[(k+1) % len(images)]
-          return toFileName(prev), toFileName(next), nil
+        return toFileName(prev), toFileName(next), nil
       }
   }
   msg := "Cannot find previous and next images for current :" + currentImage
@@ -73,6 +85,6 @@ func serveGallery(writer http.ResponseWriter, internalPath string){
     log.Print(msg)
     http.Error(writer, msg, 500)
   } else {
-    compileAndWriteTemplate("image.html", obj, writer)
+    compileAndWriteTemplate("gallery.html", obj, writer)
   }
 }
