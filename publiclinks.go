@@ -10,13 +10,13 @@ import (
 )
 
 func getAllPublicLinks()(links [][]string){
-  if files, err := ioutil.ReadDir(LINKS_DIR) ; err != nil {
+  if files, err := ioutil.ReadDir(CONFIG.LinksDir) ; err != nil {
     msg := "Error reading public links directory: " + err.Error()
     log.Fatal(msg)
     return
   } else {
     for _, f := range(files){
-      if dest, err := os.Readlink(LINKS_DIR + "/" + f.Name()) ; err != nil {
+      if dest, err := os.Readlink(CONFIG.LinksDir + "/" + f.Name()) ; err != nil {
         msg := "Error reading links in public directory: " + err.Error()
         log.Fatal(msg)
         return
@@ -32,9 +32,9 @@ func getPublicLink(writer http.ResponseWriter, request *http.Request, path strin
   allLinks := getAllPublicLinks()
 
   for _, l := range(allLinks) {
-    if l[1] == "../" + path {
+    if l[1] == path {
       log.Print("Existing public link found: " + l[0] + " => " + l[1])
-      writer.Write([]byte(fmt.Sprintf("/%s/%s", LINKS_URL, l[0])))
+      writer.Write([]byte(fmt.Sprintf("/%s/%s", CONFIG.LinksUrl, l[0])))
       return
     }
   }
@@ -47,13 +47,13 @@ func getPublicLink(writer http.ResponseWriter, request *http.Request, path strin
     http.Error(writer, msg, 500)
     return
   } else {
-    if err := os.Symlink("../" + path, fmt.Sprintf("%s/%X", LINKS_DIR, randomBytes)) ; err != nil {
+    if err := os.Symlink(path, fmt.Sprintf("%s/%X", CONFIG.LinksDir, randomBytes)) ; err != nil {
       msg := "Error creating symlink link: " + err.Error()
       log.Print(msg)
       http.Error(writer, msg, 500)
       return
     } else {
-      log.Print("No existing link found, created one : " + fmt.Sprintf("/%s/%X", LINKS_URL, randomBytes))
+      log.Print("No existing link found, created one : " + fmt.Sprintf("/%s/%X", CONFIG.LinksUrl, randomBytes))
       getPublicLink(writer, request, path)
       return
     }

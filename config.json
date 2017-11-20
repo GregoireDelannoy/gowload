@@ -1,0 +1,10 @@
+{
+  "listenAddress": "127.0.0.1",
+  "listenPort": "3000",
+  "dataDir": "/home/gregoire/code/gowload/datadir",
+  "dataUrl": "files",
+  "linksDir": "/home/gregoire/code/gowload/linksdir",
+  "linksUrl": "links",
+  "templatesDir": "./templates",
+  "staticDir": "./static"
+}

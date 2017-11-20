@@ -36,9 +36,9 @@ func splitPath(path string, isPublic bool)(links []Link){
   for i := 0; i < len(split); i++ {
     if(split[i] != "."){
       if isPublic {
-        links = append(links, Link{Url: "/" + LINKS_URL + "/" + strings.Join(split[0:i+1], "/") + "/", Name: split[i]})
+        links = append(links, Link{Url: "/" + CONFIG.LinksUrl + "/" + strings.Join(split[0:i+1], "/") + "/", Name: split[i]})
       } else {
-        links = append(links, Link{Url: "/" + DATA_URL + "/" + strings.Join(split[0:i+1], "/") + "/", Name: split[i]})
+        links = append(links, Link{Url: "/" + CONFIG.DataUrl + "/" + strings.Join(split[0:i+1], "/") + "/", Name: split[i]})
       }
     }
   }

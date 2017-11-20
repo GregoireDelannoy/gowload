@@ -36,7 +36,7 @@ func humanSize(size int64) string {
 // Initialize all templates into global variable
 func parseTemplates() (){
   templates = make(map[string]*template.Template)
-  if files, err := ioutil.ReadDir(TEMPLATES_DIR) ; err != nil {
+  if files, err := ioutil.ReadDir(CONFIG.TemplatesDir) ; err != nil {
     msg := "Error reading templates directory: " + err.Error()
     log.Fatal(msg)
   } else {
@@ -46,7 +46,7 @@ func parseTemplates() (){
 
       tpl, tplErr := template.New(f.Name()).Funcs(template.FuncMap{
         "humanDate": humanDate,
-        "humanSize": humanSize,}).ParseFiles(TEMPLATES_DIR + "/" + f.Name())
+        "humanSize": humanSize,}).ParseFiles(CONFIG.TemplatesDir + "/" + f.Name())
       if tplErr != nil {
         log.Fatal("Error parsing template: " + tplErr.Error())
       } else {

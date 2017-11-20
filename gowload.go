@@ -1,30 +1,53 @@
 package main
 
-
 import (
-"net/http"
-"log"
-"strings"
-"path"
+  "net/http"
+  "log"
+  "strings"
+  "path"
+  "encoding/json"
+  "fmt"
+  "io/ioutil"
+  "os"
 )
 
-const DATA_DIR = "datadir"
-const DATA_URL = "files"
-const LINKS_DIR = "linksdir"
-const LINKS_URL = "links"
-const TEMPLATES_DIR = "./templates"
-const STATIC_DIR = "./static"
-const PORT = "3000"
+const CONFIGURATION_FILE="config.json"
+
+type Config struct {
+  ListenAddress string
+  ListenPort string
+  DataDir string
+  DataUrl string
+  LinksDir string
+  LinksUrl string
+  TemplatesDir string
+  StaticDir string
+}
+
+var CONFIG Config
+
+func parseConfiguration(){
+  if raw, err := ioutil.ReadFile(CONFIGURATION_FILE); err != nil {
+    fmt.Println("Cannot read configuration file. ABORT. " + err.Error())
+    os.Exit(1)
+  } else {
+    if err := json.Unmarshal(raw, &CONFIG); err != nil{
+      fmt.Println("Error unmarshalling JSON: " + err.Error())
+      os.Exit(1)
+    }
+    fmt.Printf("Configuration for current run:\n%+v\n", CONFIG)
+  }
+}
 
 func linksRouter(writer http.ResponseWriter, request *http.Request){
-  cleanPath := strings.TrimPrefix(path.Clean(strings.TrimPrefix(request.URL.Path, "/" + LINKS_URL + "/")), "/")
+  cleanPath := strings.TrimPrefix(path.Clean(strings.TrimPrefix(request.URL.Path, "/" + CONFIG.LinksUrl + "/")), "/")
   if len(cleanPath) < 15{
     msg := "Links have to be links!"
     log.Print(msg)
     http.Error(writer, msg, 400)
     return
   }
-  path := LINKS_DIR + "/" + cleanPath
+  path := CONFIG.LinksDir + "/" + cleanPath
 
   if(request.Method == "GET"){
     servePath(writer, request, path, cleanPath, "")
@@ -37,7 +60,7 @@ func linksRouter(writer http.ResponseWriter, request *http.Request){
 }
 
 func filesRouter(writer http.ResponseWriter, request *http.Request){
-  cleanPath := strings.TrimPrefix(path.Clean(strings.TrimPrefix(request.URL.Path, "/" + DATA_URL +"/")), "/")
+  cleanPath := strings.TrimPrefix(path.Clean(strings.TrimPrefix(request.URL.Path, "/" + CONFIG.DataUrl +"/")), "/")
 
   user, err := getUsername(request)
   if err != nil {
@@ -47,7 +70,7 @@ func filesRouter(writer http.ResponseWriter, request *http.Request){
     return
   }
 
-  path := DATA_DIR + "/" + user + "/" + cleanPath
+  path := CONFIG.DataDir + "/" + user + "/" + cleanPath
 
   if isSymlink(path){
     msg := "Symlinks or non-existing file. Path: " + cleanPath
@@ -78,9 +101,10 @@ func filesRouter(writer http.ResponseWriter, request *http.Request){
 }
 
 func main() {
+  parseConfiguration()
   parseTemplates()
-  http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(STATIC_DIR))))
-  http.HandleFunc("/" + DATA_URL + "/", filesRouter)
-  http.HandleFunc("/" + LINKS_URL + "/", linksRouter)
-  http.ListenAndServe("127.0.0.1:" + PORT, nil)
+  http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(CONFIG.StaticDir))))
+  http.HandleFunc("/" + CONFIG.DataUrl + "/", filesRouter)
+  http.HandleFunc("/" + CONFIG.LinksUrl + "/", linksRouter)
+  http.ListenAndServe(CONFIG.ListenAddress + ":" + CONFIG.ListenPort, nil)
 }
